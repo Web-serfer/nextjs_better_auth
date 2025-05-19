@@ -1,0 +1,9 @@
+Инструкция по созданию и миграции моделей в  Better-auth
+
+1. npx prisma init --datasource-provider postgresql // создаем в проекте файл shema.prisma c провайдером postgresql
+
+2. Удаляем из файла shema.prisma строку // - output = "../lib/generated/prisma"
+
+3. npx @better-auth/cli generate // создаем модели для  better-auth
+
+4. npx prisma db push // импортируем модели в базу prisma
