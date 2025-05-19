@@ -2,6 +2,12 @@
 
 import { useEffect, useState } from "react";
 
+export type ToastState = {
+  message: string;
+  type: "success" | "error" | "info";
+  show: boolean;
+};
+
 type ToastProps = {
   message: string;
   type: "success" | "error" | "info";

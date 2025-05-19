@@ -4,13 +4,11 @@ import Link from "next/link";
 
 export default function EmailVerifiedPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white p-4">
-      <div className="max-w-sm w-full text-center space-y-6">
+    <div className="h-screen flex items-start justify-center bg-white p-4 pt-20 md:pt-32">
+      <div className="max-w-sm w-full text-center space-y-8">
         {/* Анимированный круг с иконкой */}
-        <div className="mx-auto w-24 h-24 flex items-center justify-center relative">
-          {/* Пульсирующий круг */}
+        <div className="mx-auto w-24 h-24 flex items-center justify-center relative mb-8">
           <div className="absolute inset-0 rounded-full bg-green-100 opacity-70 animate-pulse-circle" />
-          {/* Статичная иконка */}
           <svg
             className="relative z-10 w-12 h-12 text-green-600"
             viewBox="0 0 24 24"
@@ -23,7 +21,7 @@ export default function EmailVerifiedPage() {
         </div>
 
         {/* Текстовый блок */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           <h1 className="text-3xl font-light text-gray-800">Готово!</h1>
           <p className="text-gray-500 px-4">
             Ваш email успешно подтверждён. Можете начинать пользоваться
@@ -33,13 +31,12 @@ export default function EmailVerifiedPage() {
 
         {/* Кнопка */}
         <Link
-          href="/"
-          className="inline-block w-full max-w-xs mx-auto px-6 py-3 rounded-md text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-200"
+          href="/dashboard"
+          className="inline-block w-full max-w-xs mx-auto px-6 py-3 rounded-md text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-200 mt-8"
         >
           Перейти в сервис
         </Link>
 
-        {/* Стили анимации */}
         <style jsx global>{`
           @keyframes pulse-circle {
             0% {
