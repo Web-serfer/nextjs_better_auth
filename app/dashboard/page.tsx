@@ -7,7 +7,7 @@ const DashboardPage = async () => {
   if (!session) {
     redirect("/sign-in");
   }
-  return <div>Dashboard page</div>;
+  return <div className="text-center font-bold mt-10">Dashboard page</div>;
 };
 
 export default DashboardPage;

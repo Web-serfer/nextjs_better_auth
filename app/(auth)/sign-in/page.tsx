@@ -9,23 +9,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 import { signInSchema, TSignInSchema } from "@/lib/zod";
-import { Toast } from "@/components/Toast";
 import { authClient } from "@/lib/auth-client";
 import { FormField } from "@/components/signup/FormField";
 import { AuthFormWrapper } from "@/components/signup/AuthFormWrapper";
 import { SocialButton } from "@/components/signup/SocialButton";
 import { DividerWithText } from "@/components/signup/DividerWithText";
 import { SubmitButton } from "@/components/signup/SubmitButton";
+import { ImSpinner8 } from "react-icons/im";
 
 const SignInForm = () => {
   const router = useRouter();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error";
-    show: boolean;
-  } | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -41,17 +37,14 @@ const SignInForm = () => {
   });
 
   const handleAuthSuccess = useCallback(() => {
-    // Вариант 1: Принудительное обновление данных
     window.location.href = "/dashboard";
-
-    // Или вариант 2: Для Next.js 13.4+ с router.refresh()
-    // router.push("/dashboard");
-    // router.refresh();
-  }, [router]);
+  }, []);
 
   const onSubmit = useCallback(
     async (data: TSignInSchema) => {
       setIsSubmitting(true);
+      setErrorMessage(null);
+
       try {
         await authClient.signIn.email(
           {
@@ -60,31 +53,17 @@ const SignInForm = () => {
             rememberMe: data.rememberMe,
           },
           {
-            onRequest: () => setToast(null),
-            onSuccess: () => {
-              setToast({
-                message: "Successfully signed in!",
-                type: "success",
-                show: true,
-              });
-              handleAuthSuccess();
-            },
-            onError: () => {
-              setToast({
-                message: "Sign in error. Please try again.",
-                type: "error",
-                show: true,
-              });
+            onSuccess: handleAuthSuccess,
+            onError: (ctx) => {
+              setErrorMessage(
+                ctx.error?.message || "Sign in error. Please try again."
+              );
               setIsSubmitting(false);
             },
           }
         );
       } catch (error) {
-        setToast({
-          message: "Network error. Please check your connection.",
-          type: "error",
-          show: true,
-        });
+        setErrorMessage("Network error. Please check your connection.");
         setIsSubmitting(false);
       }
     },
@@ -93,14 +72,12 @@ const SignInForm = () => {
 
   const handleGoogleSignIn = useCallback(() => {
     setIsGoogleLoading(true);
+    setErrorMessage(null);
+
     authClient.signIn.google({
       callbackURL: `${window.location.origin}/dashboard`,
       onError: (ctx) => {
-        setToast({
-          message: ctx.error?.message || "Failed to sign in with Google",
-          type: "error",
-          show: true,
-        });
+        setErrorMessage(ctx.error?.message || "Failed to sign in with Google");
         setIsGoogleLoading(false);
       },
       onSuccess: handleAuthSuccess,
@@ -109,8 +86,10 @@ const SignInForm = () => {
 
   return (
     <>
-      {toast?.show && (
-        <Toast {...toast} onClose={() => setToast(null)} duration={5000} />
+      {errorMessage && (
+        <div className="mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+          {errorMessage}
+        </div>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
@@ -158,9 +137,15 @@ const SignInForm = () => {
 
         <SubmitButton
           loading={isSubmitting}
-          icon={<FiLogIn className="-ml-1 mr-2 h-5 w-5" />}
+          icon={
+            isSubmitting ? (
+              <ImSpinner8 className="-ml-1 mr-2 h-5 w-5 animate-spin" />
+            ) : (
+              <FiLogIn className="-ml-1 mr-2 h-5 w-5" />
+            )
+          }
         >
-          Sign In
+          {isSubmitting ? "Signing in..." : "Sign In"}
         </SubmitButton>
       </form>
 
@@ -170,9 +155,15 @@ const SignInForm = () => {
         provider="google"
         loading={isGoogleLoading}
         onClick={handleGoogleSignIn}
-        icon={<FcGoogle className="-ml-1 mr-2 h-5 w-5" />}
+        icon={
+          isGoogleLoading ? (
+            <ImSpinner8 className="-ml-1 mr-2 h-5 w-5 animate-spin" />
+          ) : (
+            <FcGoogle className="-ml-1 mr-2 h-5 w-5" />
+          )
+        }
       >
-        Continue with Google
+        {isGoogleLoading ? "Signing in..." : "Continue with Google"}
       </SocialButton>
 
       <div className="mt-6 text-center text-sm">

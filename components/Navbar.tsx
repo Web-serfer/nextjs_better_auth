@@ -11,24 +11,25 @@ const Navbar = () => {
   const { data: session, isPending, refetch } = useSession();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
-  // Логирование для отладки
   useEffect(() => {
     setIsMounted(true);
-    console.log("Navbar mounted. Session:", session);
-  }, [session]);
+  }, []);
 
   const handleSignOut = async () => {
     try {
+      setIsSigningOut(true);
       await signOut();
       await fetch("/api/auth/sign-out", { method: "POST" });
-      router.refresh(); // Форсируем обновление страницы
+      router.refresh();
     } catch (error) {
       console.error("Sign out error:", error);
+    } finally {
+      setIsSigningOut(false);
     }
   };
 
-  // Показываем заглушку, пока не завершится гидратация или загрузка сессии
   if (!isMounted || isPending) {
     return (
       <nav className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 shadow-sm">
@@ -40,7 +41,6 @@ const Navbar = () => {
     );
   }
 
-  // Основной рендер после гидратации
   return (
     <nav className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 shadow-sm">
       <div className="text-xl font-bold text-gray-800">
@@ -55,9 +55,52 @@ const Navbar = () => {
             </span>
             <button
               onClick={handleSignOut}
-              className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors duration-200 hover:cursor-pointer"
+              disabled={isSigningOut}
+              className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors duration-200 hover:cursor-pointer flex items-center gap-2"
             >
-              Sign Out
+              {isSigningOut ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Signing Out...
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                    />
+                  </svg>
+                  Sign Out
+                </>
+              )}
             </button>
           </div>
         ) : (
