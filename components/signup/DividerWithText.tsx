@@ -1,5 +1,5 @@
 export const DividerWithText = ({ text }: { text: string }) => (
-  <div className="mt-6">
+  <div className="my-3">
     <div className="relative">
       <div className="absolute inset-0 flex items-center">
         <div className="w-full border-t border-gray-300" />

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
+import { ImSpinner8 } from "react-icons/im";
 import { FiLogIn, FiMail, FiLock } from "react-icons/fi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -15,7 +16,6 @@ import { AuthFormWrapper } from "@/components/signup/AuthFormWrapper";
 import { SocialButton } from "@/components/signup/SocialButton";
 import { DividerWithText } from "@/components/signup/DividerWithText";
 import { SubmitButton } from "@/components/signup/SubmitButton";
-import { ImSpinner8 } from "react-icons/im";
 
 const SignInForm = () => {
   const router = useRouter();
