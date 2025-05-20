@@ -69,9 +69,9 @@ const SignInForm = () => {
               });
               handleAuthSuccess();
             },
-            onError: (error) => {
+            onError: () => {
               setToast({
-                message: error.message || "Sign in error. Please try again.",
+                message: "Sign in error. Please try again.",
                 type: "error",
                 show: true,
               });
