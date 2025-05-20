@@ -61,6 +61,15 @@ export const signInSchema = z.object({
   rememberMe: z.boolean().optional(),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Invalid email format")
+    .transform((email) => email.toLowerCase().trim()),
+});
+
 // Типы
 export type TSignUpSchema = z.infer<typeof signUpSchema>;
 export type TSignInSchema = z.infer<typeof signInSchema>;
+export type TForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;

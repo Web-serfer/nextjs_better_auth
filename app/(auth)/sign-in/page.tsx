@@ -20,6 +20,7 @@ import { SubmitButton } from "@/components/signup/SubmitButton";
 const SignInForm = () => {
   const router = useRouter();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error";
@@ -30,7 +31,6 @@ const SignInForm = () => {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
   } = useForm<TSignInSchema>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -40,10 +40,20 @@ const SignInForm = () => {
     },
   });
 
+  const handleAuthSuccess = useCallback(() => {
+    // Вариант 1: Принудительное обновление данных
+    window.location.href = "/dashboard";
+
+    // Или вариант 2: Для Next.js 13.4+ с router.refresh()
+    // router.push("/dashboard");
+    // router.refresh();
+  }, [router]);
+
   const onSubmit = useCallback(
     async (data: TSignInSchema) => {
+      setIsSubmitting(true);
       try {
-        const response = await authClient.signIn.email(
+        await authClient.signIn.email(
           {
             email: data.email,
             password: data.password,
@@ -57,7 +67,7 @@ const SignInForm = () => {
                 type: "success",
                 show: true,
               });
-              router.push("/dashboard");
+              handleAuthSuccess();
             },
             onError: (error) => {
               setToast({
@@ -65,6 +75,7 @@ const SignInForm = () => {
                 type: "error",
                 show: true,
               });
+              setIsSubmitting(false);
             },
           }
         );
@@ -74,9 +85,10 @@ const SignInForm = () => {
           type: "error",
           show: true,
         });
+        setIsSubmitting(false);
       }
     },
-    [router]
+    [handleAuthSuccess]
   );
 
   const handleGoogleSignIn = useCallback(() => {
@@ -91,8 +103,9 @@ const SignInForm = () => {
         });
         setIsGoogleLoading(false);
       },
+      onSuccess: handleAuthSuccess,
     });
-  }, []);
+  }, [handleAuthSuccess]);
 
   return (
     <>
@@ -144,7 +157,7 @@ const SignInForm = () => {
         </div>
 
         <SubmitButton
-          loading={false}
+          loading={isSubmitting}
           icon={<FiLogIn className="-ml-1 mr-2 h-5 w-5" />}
         >
           Sign In
